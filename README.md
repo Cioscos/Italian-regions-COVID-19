@@ -26,7 +26,7 @@ And then activate the venv
 from\root\of\prject\> cd venv\scripts
 >activate.bat
 ```
-Now intall all the requirements typing:
+Now install all the requirements typing:
 ```
 pip install -r requirements.txt
 ```
@@ -35,7 +35,7 @@ pip install -r requirements.txt
 [Download this file from Google drive;](https://drive.google.com/file/d/1ACTmGWlawjbYoE5Q5ak-B2gDU4CrA_T6/view?usp=sharing)
 It is a wheel that will install PyQt4 files
 
-Then use type this on CMD:
+Then type this on CMD:
 ```
 path\of\whl_file> pip install PyQt4-4.11.4-cp37-cp37m-win_amd64.whl
 ```
@@ -43,12 +43,12 @@ Finally run the script:
 ```
 Italian-regions-COVID-19\src> python main.py
 ```
-## How to create an executable if you want to use on a PC without Python
+## How to create an executable if you want to run it on a PC without Python
 Open CMD and type:
 ```
 pip install pyinstaller
 ```
-Then go the location where your Python script is stored
+Then go to the location where your Python script is stored
 ```DOS
 cd path\to\python\script
 ```
