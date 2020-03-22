@@ -3,7 +3,7 @@ import sys
 import urllib.request
 
 import matplotlib.pyplot as plt
-from PyQt4.QtGui import *
+from PyQt4 import QtGui
 
 
 def write_plot(region, region_name):
@@ -40,7 +40,37 @@ def json_loader():
         return data
 
 
-class RegionList(QListWidget):
+class DataWindow(QtGui.QDialog):
+    def __init__(self, region, name):
+        super(DataWindow, self).__init__()
+
+        self.setWindowTitle('Data')
+        self.resize(200, 100)
+
+        # Layout that will contains all the element of the window
+        self.windowLayout = QtGui.QVBoxLayout()
+
+        # It'll contain the data about the last region update
+        lastData = region[len(region) - 1]
+
+        for datum in lastData:
+            # Filter useless data
+            if datum != 'stato' and datum != 'codice_regione' and datum != 'lat' and datum != 'long':
+                self.hLayout = QtGui.QHBoxLayout()
+                self.label = QtGui.QLabel(str(datum))
+                self.dateText = QtGui.QLineEdit()
+                self.dateText.setText(str(lastData[datum]))
+                self.dateText.setReadOnly(True)
+                self.hLayout.addWidget(self.label)
+                self.hLayout.addWidget(self.dateText)
+                self.windowLayout.addLayout(self.hLayout)
+
+        self.setLayout(self.windowLayout)
+        self.show()
+        write_plot(region, name)
+
+
+class RegionList(QtGui.QListWidget):
 
     # It'll contain all data about regions
     regions = None
@@ -63,24 +93,40 @@ class RegionList(QListWidget):
                     region_dic[j] = region
                     j += 1
 
-        write_plot(region_dic, str(item.text()))
+        dataWindow = DataWindow(region_dic, str(item.text()))
+        dataWindow.exec_()
 
     def init_json(self):
         self.regions = json_loader()
 
 
 def main():
-    app = QApplication(sys.argv)
-    window = QWidget()
-    layout = QVBoxLayout(window)
+    app = QtGui.QApplication(sys.argv)
+    window = QtGui.QWidget()
+
+    # Create a vertical layout
+    layout = QtGui.QVBoxLayout(window)
+    # Initialize listWidget
     listWidget = RegionList()
+    # Load json from Github
     listWidget.init_json()
 
     # Resize width and height
     listWidget.resize(300, 120)
+    # Set title
     listWidget.setToolTip('List of regions')
 
-    for i in range(21):
+    # List of region name of each data
+    regionNames = list()
+    for region in listWidget.regions:
+        # Fill the list
+        regionNames.append(region['denominazione_regione'])
+
+    # Delete duplicate
+    regionNames = list(dict.fromkeys(regionNames))
+
+    # Fill the list
+    for i in range(len(regionNames)):
         region = listWidget.regions[i]
         listWidget.addItem(region['denominazione_regione'])
 
