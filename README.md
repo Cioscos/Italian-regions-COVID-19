@@ -43,3 +43,20 @@ Finally run the script:
 ```
 Italian-regions-COVID-19\src> python main.py
 ```
+## How to create an executable if you want to use on a PC without Python
+Open CMD and type:
+```
+pip install pyinstaller
+```
+Then go the location where your Python script is stored
+```DOS
+cd path\to\python\script
+```
+Next, use the following template to create the executable:
+```
+pyinstaller --onefile main.py
+```
+Pyinstaller will create a new folder called dist in which there is the executable just created.
+Once you click on the file, you should be able to launch your program (if you get an error message, 
+you may need to install 
+[Visual C++ Redistributable](https://support.microsoft.com/en-ca/help/2977003/the-latest-supported-visual-c-downloads)).
