@@ -20,6 +20,7 @@ def write_plot(region, region_name):
 
     fig, (ax1, ax2) = plt.subplots(1, 2)
     fig.canvas.set_window_title('Grafici')
+
     fig.suptitle('Grafici andamento contagi in ' + region_name)
 
     ax1.plot(cases, 'o-r')
@@ -57,7 +58,7 @@ class DataWindow(QtGui.QDialog):
             # Filter useless data
             if datum != 'stato' and datum != 'codice_regione' and datum != 'lat' and datum != 'long':
                 self.hLayout = QtGui.QHBoxLayout()
-                self.label = QtGui.QLabel(str(datum))
+                self.label = QtGui.QLabel(str(datum).replace('_', ' ').capitalize())
                 self.dateText = QtGui.QLineEdit()
                 self.dateText.setText(str(lastData[datum]))
                 self.dateText.setReadOnly(True)
@@ -66,6 +67,7 @@ class DataWindow(QtGui.QDialog):
                 self.windowLayout.addLayout(self.hLayout)
 
         self.setLayout(self.windowLayout)
+        self.setWindowIcon(QtGui.QIcon('..\\icons\\mainWindow.png'))
         self.show()
         write_plot(region, name)
 
@@ -111,10 +113,9 @@ def main():
     # Load json from Github
     listWidget.init_json()
 
-    # Resize width and height
-    listWidget.resize(300, 120)
     # Set title
     listWidget.setToolTip('List of regions')
+    listWidget.setAlternatingRowColors(True)
 
     # List of region name of each data
     regionNames = list()
@@ -130,13 +131,14 @@ def main():
         region = listWidget.regions[i]
         listWidget.addItem(region['denominazione_regione'])
 
-    listWidget.setWindowTitle('PyQT QListwidget Demo')
     listWidget.itemDoubleClicked.connect(listWidget.clicked)
 
     layout.addWidget(listWidget)
 
     window.setWindowTitle('Italian Regions COVID-19')
-    window.resize(800, 600)
+
+    window.setFixedSize(300, 200)
+    window.setWindowIcon(QtGui.QIcon('..\\icons\\mainWindow.png'))
     window.show()
     sys.exit(app.exec_())
 
