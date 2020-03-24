@@ -28,20 +28,24 @@ def write_plot(region, region_name):
         virusPositive[2].append(day['isolamento_domiciliare'])
 
     # Create matplotlib figure
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8, 6))
     fig.suptitle('Grafici andamento contagi in ' + region_name)
-    gs = fig.add_gridspec(2, 2)
+    gs = fig.add_gridspec(2, 2, hspace=0.40, wspace=0.40)
 
     # Creates plot for total cases and currently positives
     ax1 = fig.add_subplot(gs[0, 0])
     ax1.plot(cases, 'o-r')
     ax1.plot(currently_positive, 'yo-')
+    ax1.set_ylabel('Infetti')
+    ax1.set_xlabel('Giorni')
     ax1.legend(['Casi totali', 'Attualmente positivi'], loc='upper left')
 
     # Creates plot for dead and recovered
     ax2 = fig.add_subplot(gs[0, 1])
     ax2.plot(dead, 'bo-')
     ax2.plot(recovered, 'go-')
+    ax2.set_ylabel('Infetti')
+    ax2.set_xlabel('Giorni')
     ax2.legend(['Morti', 'Curati'], loc='upper left')
 
     # create a plot for the 3 types of infected people
@@ -54,7 +58,6 @@ def write_plot(region, region_name):
     ax3.set_ylabel('Infetti')
     ax3.set_xlabel('Giorni')
     ax3.legend(['Isolamento domiciliare', 'Terapia intensiva', 'Ricoverati con sintomi'], loc='upper left')
-    # ax3.set_yticks(np.arange(0, np.max(virusPositive[0]) + np.max(virusPositive[1]) + np.max(virusPositive[2]), 100))
     ax3.set_xticks(np.arange(0, len(virusPositive[0]), 5))
 
     plt.show()
@@ -99,7 +102,6 @@ class DataWindow(QtGui.QDialog):
 
 
 class RegionList(QtGui.QListWidget):
-
     # It'll contain all data about regions
     regions = None
 
