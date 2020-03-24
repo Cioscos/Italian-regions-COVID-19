@@ -3,6 +3,7 @@ import sys
 import urllib.request
 
 import matplotlib.pyplot as plt
+import numpy as np
 from PyQt4 import QtGui
 
 
@@ -11,25 +12,50 @@ def write_plot(region, region_name):
     dead = []
     recovered = []
     currently_positive = []
+
+    # types of virus positive
+    virusPositive = [[], [], []]
+
+    # Load the lists with data for each days
     for index in region:
         day = region[index]
         cases.append(day['totale_casi'])
         dead.append(day['deceduti'])
         recovered.append(day['dimessi_guariti'])
         currently_positive.append(day['totale_attualmente_positivi'])
+        virusPositive[0].append(day['ricoverati_con_sintomi'])
+        virusPositive[1].append(day['terapia_intensiva'])
+        virusPositive[2].append(day['isolamento_domiciliare'])
 
-    fig, (ax1, ax2) = plt.subplots(1, 2)
-    fig.canvas.set_window_title('Grafici')
-
+    # Create matplotlib figure
+    fig = plt.figure()
     fig.suptitle('Grafici andamento contagi in ' + region_name)
+    gs = fig.add_gridspec(2, 2)
 
+    # Creates plot for total cases and currently positives
+    ax1 = fig.add_subplot(gs[0, 0])
     ax1.plot(cases, 'o-r')
     ax1.plot(currently_positive, 'yo-')
     ax1.legend(['Casi totali', 'Attualmente positivi'], loc='upper left')
 
+    # Creates plot for dead and recovered
+    ax2 = fig.add_subplot(gs[0, 1])
     ax2.plot(dead, 'bo-')
     ax2.plot(recovered, 'go-')
     ax2.legend(['Morti', 'Curati'], loc='upper left')
+
+    # create a plot for the 3 types of infected people
+    ax3 = fig.add_subplot(gs[1, 0])
+    x = np.arange(len(virusPositive[0]))
+
+    ax3.bar(x, virusPositive[2], 0.50, color='g')
+    ax3.bar(x, virusPositive[1], 0.50, color='r')
+    ax3.bar(x, virusPositive[0], 0.50, bottom=virusPositive[2], color='b')
+    ax3.set_ylabel('Infetti')
+    ax3.set_xlabel('Giorni')
+    ax3.legend(['Isolamento domiciliare', 'Terapia intensiva', 'Ricoverati con sintomi'], loc='upper left')
+    # ax3.set_yticks(np.arange(0, np.max(virusPositive[0]) + np.max(virusPositive[1]) + np.max(virusPositive[2]), 100))
+    ax3.set_xticks(np.arange(0, len(virusPositive[0]), 5))
 
     plt.show()
 
@@ -67,7 +93,7 @@ class DataWindow(QtGui.QDialog):
                 self.windowLayout.addLayout(self.hLayout)
 
         self.setLayout(self.windowLayout)
-        self.setWindowIcon(QtGui.QIcon('..\\icons\\mainWindow.png'))
+        self.setWindowIcon(QtGui.QIcon('.\\mainWindow.png'))
         self.show()
         write_plot(region, name)
 
@@ -138,7 +164,7 @@ def main():
     window.setWindowTitle('Italian Regions COVID-19')
 
     window.setFixedSize(300, 200)
-    window.setWindowIcon(QtGui.QIcon('..\\icons\\mainWindow.png'))
+    window.setWindowIcon(QtGui.QIcon('.\\mainWindow.png'))
     window.show()
     sys.exit(app.exec_())
 
