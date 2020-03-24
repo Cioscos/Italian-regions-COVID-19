@@ -7,11 +7,15 @@ Data are automatically downloaded form Repository of "Protezione civile"
 
 When you open the software you'll see this windows:
 
-<img src="https://i.imgur.com/vcIO3kd.png" width=600 height=400/>
+<img src="https://i.imgur.com/fTXTjL1.png" width=600 height=400/>
 
 You can double click on a region to watch visual data about the selected region:
 
-<img src="https://i.imgur.com/6MAaZwJ.png" />
+<img src="https://i.imgur.com/VUlxMox.png" />
+
+With the plot window, you can watch also last day info:
+
+<img src="https://i.imgur.com/BRh02cp.png" />
 
 ## How to use
 ```
