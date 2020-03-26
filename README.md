@@ -1,5 +1,6 @@
 # Italian-regions-COVID-19
 [![GitHub commit](https://img.shields.io/github/last-commit/Cioscos/Italian-regions-COVID-19)](https://github.com/Cioscos/Italian-regions-COVID-19.git)
+[![GitHub license](https://img.shields.io/badge/License-Creative%20Commons%20Attribution%204.0%20International-blue)](https://github.com/Cioscos/Italian-regions-COVID-19/blob/master/LICENSE)
 
 This software allows you to view data regarding the number of total infected, currently infected, deceased and recovered for each region, by COVID-19.
 
