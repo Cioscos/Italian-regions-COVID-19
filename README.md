@@ -22,7 +22,15 @@ With the plot window, you can watch also last day info:
 ```
 git clone https://github.com/Cioscos/Italian-regions-COVID-19.git
 ```
-Then create a virtualenv if u prefer in the root of the project
+
+Or download the project directly from Github.
+
+If u don't have virtualenv installed, install it typing:
+```
+pip install virtualenv
+```
+
+Then create a virtualenv, if you prefer, in the root of the project.
 ```
 python -m venv \path\to\new\virtual\environment
 ```
@@ -34,6 +42,11 @@ from\root\of\prject\> cd venv\scripts
 Now install all the requirements typing:
 ```
 pip install -r requirements.txt
+```
+
+Next, execute the script in the folder of the .py file:
+```
+python main.py
 ```
 
 ### If u have some problem with PyQt4 and you are on Windows try this:
