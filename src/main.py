@@ -1,7 +1,6 @@
 import json
 import sys
 import urllib.request
-
 import matplotlib.pyplot as plt
 import numpy as np
 from PyQt4 import QtGui
@@ -22,7 +21,7 @@ def write_plot(region, region_name):
         cases.append(day['totale_casi'])
         dead.append(day['deceduti'])
         recovered.append(day['dimessi_guariti'])
-        currently_positive.append(day['totale_attualmente_positivi'])
+        currently_positive.append(day['totale_positivi'])
         virusPositive[0].append(day['ricoverati_con_sintomi'])
         virusPositive[1].append(day['terapia_intensiva'])
         virusPositive[2].append(day['isolamento_domiciliare'])
