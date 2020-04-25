@@ -1,6 +1,8 @@
 import json
 import sys
 import urllib.request
+import warnings
+warnings.filterwarnings("ignore")
 import matplotlib.pyplot as plt
 import numpy as np
 from PyQt4 import QtGui

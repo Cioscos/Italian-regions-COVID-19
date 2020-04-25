@@ -72,7 +72,7 @@ cd path\to\python\script
 ```
 Next, use the following template to create the executable:
 ```
-pyinstaller --onefile main.py
+pyinstaller --onefile -w main.py
 ```
 Pyinstaller will create a new folder called dist in which there is the executable just created.
 Once you click on the file, you should be able to launch your program (if you get an error message, 
