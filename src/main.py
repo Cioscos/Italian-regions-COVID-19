@@ -1,85 +1,90 @@
-import json
 import sys
-import urllib.request
-import warnings
-warnings.filterwarnings("ignore")
-import matplotlib.pyplot as plt
-import numpy as np
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
+import utilities
 
 
-def write_plot(region, region_name):
-    cases = []
-    dead = []
-    recovered = []
-    currently_positive = []
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.setObjectName("MainWindow")
+        self.resize(800, 600)
+        self.setDocumentMode(False)
+        self.setWindowIcon(QtGui.QIcon('.\\mainWindow.png'))
+        self.setupUi()
 
-    # types of virus positive
-    virusPositive = [[], [], []]
+    def setupUi(self):
+        self.centralwidget = QtWidgets.QWidget(self)
+        self.centralwidget.setObjectName("centralwidget")
 
-    # Load the lists with data for each days
-    for index in region:
-        day = region[index]
-        cases.append(day['totale_casi'])
-        dead.append(day['deceduti'])
-        recovered.append(day['dimessi_guariti'])
-        currently_positive.append(day['totale_positivi'])
-        virusPositive[0].append(day['ricoverati_con_sintomi'])
-        virusPositive[1].append(day['terapia_intensiva'])
-        virusPositive[2].append(day['isolamento_domiciliare'])
+        self.RegionList = RegionList(self.centralwidget)
+        self.RegionList.setGeometry(QtCore.QRect(0, 40, 791, 471))
+        self.RegionList.setMouseTracking(False)
+        self.RegionList.setAlternatingRowColors(True)
+        self.RegionList.setObjectName("RegionList")
+        self.RegionList.init_json()
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(0, 0, 791, 41))
+        self.label.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.label.setObjectName("label")
+        self.label.setMargin(10)
+        self.okButton = QtWidgets.QPushButton(self.centralwidget)
+        self.okButton.setGeometry(QtCore.QRect(690, 520, 101, 31))
+        self.okButton.setFlat(False)
+        self.okButton.setObjectName("okButton")
+        self.okButton.clicked.connect(self.clicked)
 
-    # Create matplotlib figure
-    fig = plt.figure(figsize=(8, 6))
-    fig.suptitle('Grafici andamento contagi in ' + region_name)
-    gs = fig.add_gridspec(2, 2, hspace=0.40, wspace=0.40)
+        self.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(self)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
+        self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        self.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(self)
+        self.statusbar.setObjectName("statusbar")
+        self.setStatusBar(self.statusbar)
+        self.actionSave = QtWidgets.QAction(self)
+        self.actionSave.setCheckable(False)
+        self.actionSave.setChecked(False)
+        self.actionSave.setObjectName("actionSave")
+        self.actionEcit = QtWidgets.QAction(self)
+        self.actionEcit.setObjectName("actionEcit")
+        self.menuFile.addAction(self.actionSave)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionEcit)
+        self.menubar.addAction(self.menuFile.menuAction())
 
-    # Creates plot for total cases and currently positives
-    ax1 = fig.add_subplot(gs[0, 0])
-    ax1.plot(cases, 'o-r')
-    ax1.plot(currently_positive, 'yo-')
-    ax1.set_ylabel('Infetti')
-    ax1.set_xlabel('Giorni')
-    ax1.legend(['Casi totali', 'Attualmente positivi'], loc='upper left')
+        self.retranslateUi()
+        QtCore.QMetaObject.connectSlotsByName(self)
 
-    # Creates plot for dead and recovered
-    ax2 = fig.add_subplot(gs[0, 1])
-    ax2.plot(dead, 'bo-')
-    ax2.plot(recovered, 'go-')
-    ax2.set_ylabel('Infetti')
-    ax2.set_xlabel('Giorni')
-    ax2.legend(['Morti', 'Curati'], loc='upper left')
+    def retranslateUi(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.setWindowTitle(_translate("MainWindow", "Italian-regions-COVID-19"))
+        self.RegionList.setStatusTip(_translate("MainWindow", "Seleziona una regione per visualizzarne i dati"))
+        self.RegionList.setSortingEnabled(True)
+        self.label.setText(_translate("MainWindow", "Lista delle regioni"))
+        self.okButton.setToolTip(_translate("MainWindow", "Seleziona"))
+        self.okButton.setText(_translate("MainWindow", "Ok"))
+        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.actionSave.setText(_translate("MainWindow", "Save as File"))
+        self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
+        self.actionEcit.setText(_translate("MainWindow", "Exit"))
 
-    # create a plot for the 3 types of infected people
-    ax3 = fig.add_subplot(gs[1, 0])
-    x = np.arange(len(virusPositive[0]))
-
-    ax3.bar(x, virusPositive[2], 0.50, color='g')
-    ax3.bar(x, virusPositive[1], 0.50, color='r')
-    ax3.bar(x, virusPositive[0], 0.50, bottom=virusPositive[2], color='b')
-    ax3.set_ylabel('Infetti')
-    ax3.set_xlabel('Giorni')
-    ax3.legend(['Isolamento domiciliare', 'Terapia intensiva', 'Ricoverati con sintomi'], loc='upper left')
-    ax3.set_xticks(np.arange(0, len(virusPositive[0]), 5))
-
-    plt.show()
-
-
-def json_loader():
-    with urllib.request.urlopen(
-            "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-regioni.json") as url:
-        data = json.loads(url.read().decode())
-        return data
+    def clicked(self):
+        self.RegionList.clicked(self.RegionList.currentItem())
 
 
-class DataWindow(QtGui.QDialog):
+class DataWindow(QtWidgets.QDialog):
     def __init__(self, region, name):
         super(DataWindow, self).__init__()
+        self.region = region
+        self.name = name
 
         self.setWindowTitle('Data')
         self.resize(200, 100)
 
         # Layout that will contains all the element of the window
-        self.windowLayout = QtGui.QVBoxLayout()
+        self.windowLayout = QtWidgets.QVBoxLayout()
 
         # It'll contain the data about the last region update
         lastData = region[len(region) - 1]
@@ -87,29 +92,46 @@ class DataWindow(QtGui.QDialog):
         for datum in lastData:
             # Filter useless data
             if datum != 'stato' and datum != 'codice_regione' and datum != 'lat' and datum != 'long':
-                self.hLayout = QtGui.QHBoxLayout()
-                self.label = QtGui.QLabel(str(datum).replace('_', ' ').capitalize())
-                self.dateText = QtGui.QLineEdit()
+                self.hLayout = QtWidgets.QHBoxLayout()
+                self.label = QtWidgets.QLabel(str(datum).replace('_', ' ').capitalize())
+                self.dateText = QtWidgets.QLineEdit()
                 self.dateText.setText(str(lastData[datum]))
                 self.dateText.setReadOnly(True)
+                self.dateText.textChanged.connect(self.resizeToContent)
                 self.hLayout.addWidget(self.label)
                 self.hLayout.addWidget(self.dateText)
                 self.windowLayout.addLayout(self.hLayout)
 
+        self.hLayout = QtWidgets.QHBoxLayout()
+        self.showPlotButton = QtWidgets.QPushButton(self)
+        self.showPlotButton.setText('Mostra grafico')
+        self.showPlotButton.clicked.connect(self.clicked)
+        self.hLayout.addWidget(self.showPlotButton)
+        self.windowLayout.addLayout(self.hLayout)
         self.setLayout(self.windowLayout)
         self.setWindowIcon(QtGui.QIcon('.\\mainWindow.png'))
+
         self.show()
-        write_plot(region, name)
+
+    def clicked(self):
+        utilities.write_plot(self.region, self.name)
+
+    def resizeToContent(self):
+        text = self.dateText.text()
+        font = QtGui.QFont()
+        fm = QtGui.QFontMetrics(font)
+        pixelsWide = fm.width(text)
+        pixelsHigh = fm.height()
+
+        self.dateText.setFixedSize(pixelsWide, pixelsHigh)
 
 
-class RegionList(QtGui.QListWidget):
-    # It'll contain all data about regions
-    regions = None
 
-    def __init__(self):
-        super().__init__()
+class RegionList(QtWidgets.QListWidget):
+    def __init__(self, parent: QtWidgets.QWidget = None):
+        super(RegionList, self).__init__(parent)
+        self.regions = None
 
-    # When an item in the list been clicked
     def clicked(self, item):
         # Dictionary with all the data of selected region
         region_dic = dict()
@@ -128,27 +150,17 @@ class RegionList(QtGui.QListWidget):
         dataWindow.exec_()
 
     def init_json(self):
-        self.regions = json_loader()
+        self.regions = utilities.json_loader()
 
 
-def main():
-    app = QtGui.QApplication(sys.argv)
-    window = QtGui.QWidget()
-
-    # Create a vertical layout
-    layout = QtGui.QVBoxLayout(window)
-    # Initialize listWidget
-    listWidget = RegionList()
-    # Load json from Github
-    listWidget.init_json()
-
-    # Set title
-    listWidget.setToolTip('List of regions')
-    listWidget.setAlternatingRowColors(True)
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    win = MainWindow()
+    win.show()
 
     # List of region name of each data
     regionNames = list()
-    for region in listWidget.regions:
+    for region in win.RegionList.regions:
         # Fill the list
         regionNames.append(region['denominazione_regione'])
 
@@ -157,20 +169,9 @@ def main():
 
     # Fill the list
     for i in range(len(regionNames)):
-        region = listWidget.regions[i]
-        listWidget.addItem(region['denominazione_regione'])
+        region = win.RegionList.regions[i]
+        win.RegionList.addItem(region['denominazione_regione'])
 
-    listWidget.itemDoubleClicked.connect(listWidget.clicked)
+    win.RegionList.itemDoubleClicked.connect(win.RegionList.clicked)
 
-    layout.addWidget(listWidget)
-
-    window.setWindowTitle('Italian Regions COVID-19')
-
-    window.setFixedSize(300, 200)
-    window.setWindowIcon(QtGui.QIcon('.\\mainWindow.png'))
-    window.show()
     sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()
